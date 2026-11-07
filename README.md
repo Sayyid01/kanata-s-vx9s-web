@@ -144,3 +144,7 @@ deletes them. **Download the ones you want to keep.** There is no restore button
 
 Tested on Brave (Chromium) on Linux. Chrome and Edge should behave the same; Windows and macOS are
 untested.
+
+---
+
+<p align="center">made with ❤️, by KacangNgoding</p>
