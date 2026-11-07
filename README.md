@@ -3,7 +3,7 @@
 A browser-only configurator for the **Fantech Kanata S VX9S** mouse (USB `30FA:1040`). It talks to the
 mouse directly over **WebHID**: nothing to install, no driver, no backend. Open the page, click
 **Connect mouse**, and change lighting and DPI.
-This project are inspired by [OpenMouse](#https://openmouse.app/).
+This project are inspired by [OpenMouse](<https://openmouse.app/>).
 
 > Status: experimental. Unofficial and not affiliated with Fantech. Every action writes to the real
 > mouse. Read [Safety](#safety) first.
