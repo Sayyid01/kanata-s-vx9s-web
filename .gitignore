@@ -1,0 +1,30 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies and build output, if a bundler or hosting tool is added later
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+
+# Local env / secrets
+.env
+.env.*
+
+# Mouse memory backups downloaded from the page (keep your own copies out of git)
+*.bin
+kanata_backup_*
+
+# Scratch captures of the Debug Mode log
+debuglog*.txt

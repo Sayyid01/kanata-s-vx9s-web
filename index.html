@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Kanata S VX9S</title>
+    <style>
+        body {
+            font: 15px/1.5 system-ui, sans-serif;
+            max-width: 680px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            background: #111;
+            color: #eee
+        }
+
+        h1 {
+            font-size: 1.3rem
+        }
+
+        h2 {
+            font-size: 1rem;
+            color: #9aa;
+            margin: 1.5rem 0 .5rem
+        }
+
+        section {
+            border-top: 1px solid #333;
+            margin-top: 1.5rem;
+            padding-top: .5rem
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: .5rem
+        }
+
+        button,
+        select,
+        input {
+            padding: .55rem;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #222;
+            color: #eee;
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        button:hover {
+            background: #2f2f3a
+        }
+
+        button.off {
+            border-color: #a44
+        }
+
+        button.primary {
+            border-color: #47a
+        }
+
+        input {
+            font-family: monospace;
+            width: 18em
+        }
+
+        .row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .stage {
+            display: grid;
+            grid-template-columns: 5rem 1fr 6rem;
+            gap: .5rem;
+            align-items: center;
+            margin: .3rem 0
+        }
+
+        .stage.active {
+            color: #9c9
+        }
+
+        .tabs {
+            display: flex;
+            gap: .3rem;
+            margin-top: 1rem;
+            border-bottom: 1px solid #333
+        }
+
+        .tabs button {
+            border: 1px solid #333;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            background: #181818;
+            color: #9aa
+        }
+
+        .tabs button.sel {
+            background: #2a2a36;
+            color: #eee;
+            border-color: #47a
+        }
+
+        .tab {
+            display: none
+        }
+
+        .tab.sel {
+            display: block
+        }
+
+        #debuglog {
+            display: none;
+            width: 100%;
+            box-sizing: border-box;
+            height: 14rem;
+            margin-top: .5rem;
+            padding: .5rem;
+            border: 1px solid #444;
+            border-radius: 6px;
+            background: #181818;
+            color: #bd9;
+            font: 12px/1.4 monospace;
+            resize: vertical
+        }
+
+        #status {
+            margin-top: 1.5rem;
+            min-height: 1.5rem;
+            color: #9c9
+        }
+
+        #status.err {
+            color: #e88
+        }
+
+        small {
+            color: #889
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Fantech Kanata S VX9S</h1>
+
+    <div class="row">
+        <button id="connect" class="primary" onclick="toggleConnect()">Connect mouse</button>
+        <small id="conninfo">not connected</small>
+    </div>
+    <p id="nohid" style="display:none;color:#e88">
+        This browser has no WebHID. Use Chrome, Edge or another Chromium browser (not Firefox / Safari),
+        on https:// or http://localhost.
+    </p>
+
+    <div class="tabs">
+        <button id="tabbtn-lighting" class="sel" onclick="showTab('lighting')">Lighting</button>
+        <button id="tabbtn-dpi" onclick="showTab('dpi')">DPI</button>
+    </div>
+
+    <div id="tab-lighting" class="tab sel">
+        <section style="border-top:none;margin-top:0">
+            <h2>Lighting</h2>
+            <div class="row">
+                <label for="led">LED</label>
+                <select id="led"></select>
+                <small>0 = far left &hellip; 4 = far right, 2 = under the logo</small>
+            </div>
+            <h2>Static colour</h2>
+            <div class="row">
+                <input type="color" id="rgb" value="#ff8000" style="width:4rem;height:2.4rem;padding:.1rem">
+                <label for="leds">LEDs lit</label>
+                <select id="leds"></select>
+                <label><input type="checkbox" id="gamma" checked style="width:auto"> gamma-correct</label>
+                <button class="primary" onclick="sendColor()">Set colour</button>
+            </div>
+            <small>One colour for the whole strip (the mouse cannot do per-LED colour). 16 levels per channel.</small>
+            <div id="groups"></div>
+            <h2>Save lighting</h2>
+            <div class="row">
+                <button class="primary" onclick="saveLight()">Save lighting to mouse</button>
+                <small>Stores the last preset or colour you picked as the mouse's power-up effect (DPI is not touched).
+                    Breathing speeds and off cannot be saved.</small>
+            </div>
+            <h2>Raw hex (8 bytes, must start with 07)</h2>
+            <div class="row">
+                <input id="raw" value="07 13 7f 60 05 00 00 00" spellcheck="false">
+                <button onclick="sendRaw()">Send raw</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="tab-dpi" class="tab">
+        <section style="border-top:none;margin-top:0">
+            <h2>DPI stages</h2>
+            <div id="stages"></div>
+            <div class="row" style="margin-top:.7rem">
+                <button onclick="loadDpi()">Reload from mouse</button>
+                <button class="primary" onclick="applyDpi()">Apply to mouse</button>
+            </div>
+            <small>Reading takes a few seconds; applying also keeps a small backup in this browser.</small>
+            <h2>Backups</h2>
+            <div class="row">
+                <select id="backups" style="width:16em"></select>
+                <button onclick="downloadSelected()">Download .bin</button>
+            </div>
+        </section>
+    </div>
+
+    <section>
+        <div class="row">
+            <label><input type="checkbox" id="debug" style="width:auto"> Debug Mode</label>
+            <button id="debugclear" onclick="clearLog()" style="display:none">Clear</button>
+        </div>
+        <textarea id="debuglog" readonly spellcheck="false"
+            placeholder="Hex commands / memory commands sent to the mouse (TX) and replies read back (RX)"></textarea>
+    </section>
+
+    <div id="status"></div>
+    <script src="kanata.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
