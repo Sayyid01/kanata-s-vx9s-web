@@ -1,4 +1,4 @@
-// Driver for the Fantech Kanata S VX9S over WebHID. Classic script (no modules, no build step).
+// Driver for the Fantech Kanata S VX9S over WebHID.
 //
 // Layers, bottom to top: KanataDevice (one 8-byte feature report) -> ConfigMemory (block
 // read/write/patch/backup) -> DpiConfig / Lighting (encoding) -> Ops (what the UI calls).
